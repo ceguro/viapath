@@ -1,7 +1,6 @@
 server:
   port: 9595
 
-# API URL
 api:
   client:
     spoonacular:
@@ -12,7 +11,6 @@ api:
   key: my-api-key
   secret: my-secret
 
-# Postgres + SQL
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5332/viapath
@@ -20,7 +18,7 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

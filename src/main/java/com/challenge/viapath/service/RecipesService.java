@@ -41,12 +41,9 @@ public class RecipesService {
 
     @Autowired
     private JmsTemplate jmsTemplate;
-
-
     private final RestTemplate restTemplate;
 
     private final RecipesImplementation recipesImplementation;
-
 
     @Autowired
     public RecipesService(RestTemplateBuilder restTemplateBuilder,  RecipesImplementation recipesImplementation) {
@@ -60,7 +57,6 @@ public class RecipesService {
             ObjectMapper objectMapper = new ObjectMapper();
             RecipeSearchResponseDTO recipesResponse = objectMapper.readValue(response.getBody(), new TypeReference<RecipeSearchResponseDTO>() {});
             jmsTemplate.convertAndSend("RecipesQueue", recipesResponse);
-            //recipesImplementation.saveRecipes(recipesResponse);
             return recipesResponse;
         } catch (Exception e) {
             logger.error("Error parsing JSON", e);

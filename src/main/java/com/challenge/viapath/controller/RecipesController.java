@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/v1/recipes")
 public class RecipesController {
@@ -25,19 +23,11 @@ public class RecipesController {
     }
 
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<RecipeSearchResponseDTO> getAllRecipes(@RequestParam(value = "query") String searchQuery) throws JsonProcessingException {
+    public ResponseEntity<RecipeSearchResponseDTO> retrieveRecipes(@RequestParam(value = "query") String searchQuery) throws JsonProcessingException {
         logger.info("Getting all recipes at: " + System.currentTimeMillis());
         RecipeSearchResponseDTO response = recipesService.RetrieveRecipes(searchQuery);
         logger.info("Finished getting all recipes at: " + System.currentTimeMillis());
         return ResponseEntity.ok(response);
-    }
-
-    @GetMapping(value = "/all", produces = "application/json")
-    public ResponseEntity getRecipes() {
-        logger.info("Getting all recipes at: " + System.currentTimeMillis());
-        List recipes = recipesService.getAll();
-        logger.info("Finished getting all recipes at: " + System.currentTimeMillis());
-        return ResponseEntity.ok(recipes);
     }
 
 }

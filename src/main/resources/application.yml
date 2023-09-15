@@ -1,0 +1,34 @@
+server:
+  port: 9595
+
+# API URL
+api:
+  client:
+    spoonacular:
+      url: https://api.spoonacular.com/recipes/
+      search: /search
+      information: /information
+      apiKey: 5af5dbb1e29a45a088bdf30f2e1ad66a
+  key: my-api-key
+  secret: my-secret
+
+# Postgres + SQL
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5332/viapath
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show_sql: false
+  main:
+    web-application-type: servlet
+  activemq:
+    broker-url: tcp://localhost:61616
+
+

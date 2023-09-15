@@ -1,0 +1,36 @@
+
+services:
+  activemq:
+    image: webcenter/activemq:latest
+    ports:
+      - "8161:8161"
+      - "61616:61616"
+    environment:
+      - ACTIVEMQ_NAME=activemq
+      - ACTIVEMQ_USERNAME=admin
+      - ACTIVEMQ_PASSWORD=admin
+    networks:
+      - db
+    restart: unless-stopped
+
+  db:
+    container_name: postgres-challenge
+    image: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5332:5432"
+    networks:
+      - db
+    restart: unless-stopped
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:

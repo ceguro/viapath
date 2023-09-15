@@ -1,9 +1,6 @@
 package com.challenge.viapath.model.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,5 +19,8 @@ public class Recipes {
     private String image;
     private int servings;
     private String title;
+
+    @Column(columnDefinition = "integer default 0")
+    private int rating;
 
 }

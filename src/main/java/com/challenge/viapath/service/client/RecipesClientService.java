@@ -91,4 +91,7 @@ public class RecipesClientService {
     public List<Recipes> getAll() {
         return this.recipesImplementation.getRecipes();
     }
+
+    public void getRecipeDetails(Long recipeId) {
+    }
 }

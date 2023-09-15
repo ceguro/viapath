@@ -6,15 +6,18 @@ import com.challenge.viapath.model.request.RateRecipeRequest;
 import com.challenge.viapath.service.client.RecipesClientService;
 import com.challenge.viapath.service.db.RecipeDbService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/recipes")
+@Validated
 public class RecipesController {
 
     Logger logger = LoggerFactory.getLogger(RecipesController.class);
@@ -43,7 +46,7 @@ public class RecipesController {
     }
 
     @PostMapping(value = "/rate", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> rateRecipe(@RequestBody RateRecipeRequest rateRecipeRequest) {
+    public ResponseEntity<String> rateRecipe(@RequestBody @Valid RateRecipeRequest rateRecipeRequest) {
         logger.info("Starting rate recipe: " + System.currentTimeMillis());
         recipeDbService.rateRecipe(rateRecipeRequest);
         logger.info("Finished rate recipe: " + System.currentTimeMillis());

@@ -23,6 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
     implementation("org.springframework.boot:spring-boot-starter-activemq")
+    implementation("org.hibernate:hibernate-validator:8.0.1.Final")
 
     implementation("org.postgresql:postgresql:42.6.0")
 

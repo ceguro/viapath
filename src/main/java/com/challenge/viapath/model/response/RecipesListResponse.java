@@ -1,4 +1,4 @@
-package com.challenge.viapath.model;
+package com.challenge.viapath.model.response;
 
 import com.challenge.viapath.model.entities.Recipes;
 import lombok.AllArgsConstructor;

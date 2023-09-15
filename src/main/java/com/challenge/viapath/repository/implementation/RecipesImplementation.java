@@ -44,4 +44,8 @@ public class RecipesImplementation {
         recipesRepository.save(recipe);
     }
 
+    public List<Recipes> getRecipesByIds(List<Long> recipesIds) {
+        return recipesRepository.findAllById(recipesIds);
+    }
+
 }

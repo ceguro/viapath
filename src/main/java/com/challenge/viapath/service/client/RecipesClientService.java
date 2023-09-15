@@ -1,4 +1,4 @@
-package com.challenge.viapath.service;
+package com.challenge.viapath.service.client;
 
 import com.challenge.viapath.dto.RecipeDTO;
 import com.challenge.viapath.dto.RecipeSearchResponseDTO;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,9 +22,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @Service
-public class RecipesService {
+public class RecipesClientService {
 
-    Logger logger = LoggerFactory.getLogger(RecipesService.class);
+    Logger logger = LoggerFactory.getLogger(RecipesClientService.class);
 
     @Value("${api.client.spoonacular.url}")
     private String hostSpoonacular;
@@ -46,7 +45,7 @@ public class RecipesService {
     private final RecipesImplementation recipesImplementation;
 
     @Autowired
-    public RecipesService(RestTemplateBuilder restTemplateBuilder,  RecipesImplementation recipesImplementation) {
+    public RecipesClientService(RestTemplateBuilder restTemplateBuilder, RecipesImplementation recipesImplementation) {
         this.recipesImplementation = recipesImplementation;
         this.restTemplate = restTemplateBuilder.errorHandler(new RestTemplateResponseErrorHandler()).build();
     }

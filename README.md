@@ -15,5 +15,8 @@ stores recipe data in a PostgreSQL database, and performs periodic updates on re
 
 ![Save Recipe detail](./images/source_url.png)
 
+# Collection
+[Download Collection](https://github.com/ceguro/viapath/blob/main/collection/collection_insomnia.json)
+
 # API Documentation
 You can find the API documentation at [http://localhost:9595/swagger-ui.html](http://localhost:9595/swagger-ui/index.html), which uses Swagger/OpenAPI to facilitate interaction and understanding of the available endpoints.

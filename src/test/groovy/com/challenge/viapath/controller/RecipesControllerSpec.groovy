@@ -1,6 +1,6 @@
 package com.challenge.viapath.controller
 
-import com.challenge.viapath.service.client.RecipesClientService
+import com.challenge.viapath.service.client.RecipeClientService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -16,12 +16,12 @@ class RecipesControllerSpec extends Specification {
     private MockMvc mockMvc
 
     @MockBean
-    RecipesClientService recipesService
+    RecipeClientService recipesService
 
     def "when get is performed then the response has status 200 and content is as expected"() {
         given:
         def expectedResponse = ""
-        recipesService.RetrieveRecipes() >> expectedResponse
+        recipesService.fetchRecipes() >> expectedResponse
 
         expect: "Status is 200 and the response content matches the expectation"
         mockMvc.perform(get("/v1/recipes/"))

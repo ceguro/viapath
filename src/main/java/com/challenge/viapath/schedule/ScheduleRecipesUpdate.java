@@ -1,11 +1,12 @@
 package com.challenge.viapath.schedule;
 
 import com.challenge.viapath.dto.RecipeDTO;
-import com.challenge.viapath.model.entities.Recipes;
-import com.challenge.viapath.repository.implementation.RecipesImplementation;
-import com.challenge.viapath.service.client.RecipesClientService;
+import com.challenge.viapath.model.entities.Recipe;
+import com.challenge.viapath.repository.implementation.RecipeImplementation;
+import com.challenge.viapath.service.client.RecipeClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,27 +16,28 @@ public class ScheduleRecipesUpdate {
 
     Logger logger = LoggerFactory.getLogger(ScheduleRecipesUpdate.class);
 
-    private final RecipesClientService recipesClientService;
+    private final RecipeClientService recipeClientService;
 
-    private final RecipesImplementation recipesImplementation;
+    private final RecipeImplementation recipeImplementation;
 
-    public ScheduleRecipesUpdate(RecipesClientService recipesClientService, RecipesImplementation recipesImplementation) {
-        this.recipesClientService = recipesClientService;
-        this.recipesImplementation = recipesImplementation;
+    public ScheduleRecipesUpdate(RecipeClientService recipeClientService, RecipeImplementation recipeImplementation) {
+        this.recipeClientService = recipeClientService;
+        this.recipeImplementation = recipeImplementation;
     }
 
-    //@Scheduled(cron = "1 * * * * *")
+    // Every hour
+    @Scheduled(cron = "0 0 * * * *")
     public void updateRecipes() {
-        List<Recipes> dataBaseRecipes = recipesClientService.getAll();
+        List<Recipe> dataBaseRecipes = recipeClientService.getAll();
         logger.info("Updating recipes at " + System.currentTimeMillis());
 
         dataBaseRecipes.parallelStream()
                 .forEach(recipe -> {
                     try {
-                        RecipeDTO updatedRecipeData = recipesClientService.getRecipe(recipe.getId());
+                        RecipeDTO updatedRecipeData = recipeClientService.getRecipe(recipe.getId());
                         if (recipeHasChanged(recipe, updatedRecipeData)) {
                             logger.info("Old recipe data: " + recipe);
-                            recipesImplementation.updateRecipes(updatedRecipeData);
+                            recipeImplementation.updateRecipes(updatedRecipeData);
                             logger.info("New recipe data: " + updatedRecipeData);
                         }
 
@@ -47,7 +49,7 @@ public class ScheduleRecipesUpdate {
         logger.info("Recipes updated at " + System.currentTimeMillis());
     }
 
-    private boolean recipeHasChanged(Recipes recipe, RecipeDTO updatedRecipeData) {
+    private boolean recipeHasChanged(Recipe recipe, RecipeDTO updatedRecipeData) {
         RecipeDTO currentRecipeData = new RecipeDTO(
                 recipe.getId(),
                 recipe.getReadyInMinutes(),

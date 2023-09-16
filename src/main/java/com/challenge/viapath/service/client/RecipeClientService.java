@@ -3,8 +3,10 @@ package com.challenge.viapath.service.client;
 import com.challenge.viapath.dto.RecipeDTO;
 import com.challenge.viapath.dto.RecipeSearchResponseDTO;
 import com.challenge.viapath.error.handle.RestTemplateResponseErrorHandler;
-import com.challenge.viapath.model.entities.Recipes;
-import com.challenge.viapath.repository.implementation.RecipesImplementation;
+import com.challenge.viapath.model.entities.Recipe;
+import com.challenge.viapath.model.entities.RecipeDetail;
+import com.challenge.viapath.repository.implementation.RecipeDetailImplementation;
+import com.challenge.viapath.repository.implementation.RecipeImplementation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
-public class RecipesClientService {
+public class RecipeClientService {
 
-    Logger logger = LoggerFactory.getLogger(RecipesClientService.class);
+    Logger logger = LoggerFactory.getLogger(RecipeClientService.class);
 
     @Value("${api.client.spoonacular.url}")
     private String hostSpoonacular;
@@ -42,19 +45,26 @@ public class RecipesClientService {
     private JmsTemplate jmsTemplate;
     private final RestTemplate restTemplate;
 
-    private final RecipesImplementation recipesImplementation;
+    private final RecipeImplementation recipeImplementation;
+
+    private final RecipeDetailImplementation  recipeDetailImplementation;
+
+    private static final String API_KEY = "apiKey";
+    private static final String QUERY_SEARCH_PARAMETER = "query";
 
     @Autowired
-    public RecipesClientService(RestTemplateBuilder restTemplateBuilder, RecipesImplementation recipesImplementation) {
-        this.recipesImplementation = recipesImplementation;
+    public RecipeClientService(RestTemplateBuilder restTemplateBuilder, RecipeImplementation recipeImplementation, RecipeDetailImplementation recipeDetailRepository, RecipeDetailImplementation recipeDetailImplementation) {
+        this.recipeImplementation = recipeImplementation;
         this.restTemplate = restTemplateBuilder.errorHandler(new RestTemplateResponseErrorHandler()).build();
+        this.recipeDetailImplementation = recipeDetailImplementation;
     }
 
-    public RecipeSearchResponseDTO RetrieveRecipes(String searchQuery) throws JsonProcessingException {
+    public RecipeSearchResponseDTO fetchRecipes(String searchQuery) throws JsonProcessingException {
         ResponseEntity<String> response = restTemplate.getForEntity(buildGetAllRecipesUrl(searchQuery), String.class);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            RecipeSearchResponseDTO recipesResponse = objectMapper.readValue(response.getBody(), new TypeReference<RecipeSearchResponseDTO>() {});
+            RecipeSearchResponseDTO recipesResponse = objectMapper.readValue(response.getBody(), new TypeReference<RecipeSearchResponseDTO>() {
+            });
             jmsTemplate.convertAndSend("RecipesQueue", recipesResponse);
             return recipesResponse;
         } catch (Exception e) {
@@ -74,24 +84,40 @@ public class RecipesClientService {
         }
     }
 
+    public List<Recipe> getAll() {
+        return this.recipeImplementation.getRecipes();
+    }
+
+    public void fetchAndPersistRecipeDetails(Long recipeId) {
+        Recipe recipe = this.recipeImplementation.getRecipeById(recipeId);
+        byte[] recipeDetailsBlob = fetchDetailRecipe(recipe.getSourceUrl());
+        RecipeDetail recipeDetail = new RecipeDetail();
+        recipeDetail.setRecipeBlob(recipeDetailsBlob);
+        recipeDetail.setRecipeId(recipe.getId());
+        recipeDetailImplementation.saveRecipeDetail(recipeDetail);
+    }
+
+    private byte[] fetchDetailRecipe(String url) {
+        return restTemplate.getForEntity(buildGetDetailRecipeUrl(url), byte[].class).getBody();
+    }
+
     private String buildGetAllRecipesUrl(String searchQuery) {
         String uri = UriComponentsBuilder.fromHttpUrl(hostSpoonacular).path(spoonacularSearch)
-                .queryParam("query", searchQuery).queryParam("apiKey", apiKey).build().toUriString();
+                .queryParam(QUERY_SEARCH_PARAMETER, searchQuery).queryParam(API_KEY, apiKey).build().toUriString();
         logger.debug("URI: {}", uri);
         return uri;
     }
 
     private String buildGetRecipeUrl(Long recipeId) {
         String uri = UriComponentsBuilder.fromHttpUrl(hostSpoonacular).path(recipeId.toString()).path(spoonacularInfo)
-                .queryParam("apiKey", apiKey).build().toUriString();
+                .queryParam(API_KEY, apiKey).build().toUriString();
         logger.debug("URI: {}", uri);
         return uri;
     }
 
-    public List<Recipes> getAll() {
-        return this.recipesImplementation.getRecipes();
-    }
-
-    public void getRecipeDetails(Long recipeId) {
+    private String buildGetDetailRecipeUrl(String url) {
+        String uri = UriComponentsBuilder.fromHttpUrl(url).build().toUriString();
+        logger.debug("URI: {}", uri);
+        return uri;
     }
 }

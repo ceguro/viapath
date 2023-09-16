@@ -1,6 +1,6 @@
 package com.challenge.viapath.model.response;
 
-import com.challenge.viapath.model.entities.Recipes;
+import com.challenge.viapath.model.entities.Recipe;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 public class RecipesListResponse {
-    private List<Recipes> results;
+    private List<Recipe> results;
 }

@@ -1,11 +1,13 @@
 package com.challenge.viapath.controller;
 
 import com.challenge.viapath.dto.RecipeSearchResponseDTO;
-import com.challenge.viapath.model.response.RecipesListResponse;
 import com.challenge.viapath.model.request.RateRecipeRequest;
-import com.challenge.viapath.service.client.RecipesClientService;
+import com.challenge.viapath.model.response.RecipesListResponse;
+import com.challenge.viapath.service.client.RecipeClientService;
 import com.challenge.viapath.service.db.RecipeDbService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,28 +19,35 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/recipes")
+@OpenAPIDefinition(info = @io.swagger.v3.oas.annotations.info.Info(title = "Recipes API (vipath)", version = "1.0", description = "Recipes API Information"))
 @Validated
 public class RecipesController {
 
     Logger logger = LoggerFactory.getLogger(RecipesController.class);
-    private final RecipesClientService recipesClientService;
+    private final RecipeClientService recipeClientService;
     private final RecipeDbService recipeDbService;
 
-    public RecipesController(RecipesClientService recipesClientService, RecipeDbService recipeDbService) {
-        this.recipesClientService = recipesClientService;
+    public RecipesController(RecipeClientService recipeClientService, RecipeDbService recipeDbService) {
+        this.recipeClientService = recipeClientService;
         this.recipeDbService = recipeDbService;
     }
 
     @GetMapping(value = "/", produces = "application/json")
-    public ResponseEntity<RecipeSearchResponseDTO> retrieveRecipes(@RequestParam(value = "query") String searchQuery) throws JsonProcessingException {
+    @Operation(summary = "Get recipes by search query")
+    public ResponseEntity<RecipeSearchResponseDTO> retrieveRecipes(@RequestHeader("x-api-key") String apiKey,
+                                                                   @RequestHeader("x-api-secret") String apiSecret,
+                                                                   @RequestParam(value = "query") String searchQuery) throws JsonProcessingException {
         logger.info("Starting getting recipes at: " + System.currentTimeMillis());
-        RecipeSearchResponseDTO response = recipesClientService.RetrieveRecipes(searchQuery);
+        RecipeSearchResponseDTO response = recipeClientService.fetchRecipes(searchQuery);
         logger.info("Finished getting recipes at: " + System.currentTimeMillis());
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(value = "/by-ids", produces = "application/json")
-    public ResponseEntity<RecipesListResponse> getRecipesByIds(@RequestParam(value = "ids") List<Long> recipesIds) {
+    @Operation(summary = "Get recipes by ids")
+    public ResponseEntity<RecipesListResponse> getRecipesByIds(@RequestHeader("x-api-key") String apiKey,
+                                                               @RequestHeader("x-api-secret") String apiSecret,
+                                                               @RequestParam(value = "ids") List<Long> recipesIds) {
         logger.info("Starting recipes by ids at: " + System.currentTimeMillis());
         RecipesListResponse response = recipeDbService.getRecipesByIds(recipesIds);
         logger.info("Finished recipes by ids at: " + System.currentTimeMillis());
@@ -46,7 +55,10 @@ public class RecipesController {
     }
 
     @PostMapping(value = "/rate", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<String> rateRecipe(@RequestBody @Valid RateRecipeRequest rateRecipeRequest) {
+    @Operation(summary = "Rate recipe")
+    public ResponseEntity<String> rateRecipe(@RequestHeader("x-api-key") String apiKey,
+                                             @RequestHeader("x-api-secret") String apiSecret,
+                                             @RequestBody @Valid RateRecipeRequest rateRecipeRequest) {
         logger.info("Starting rate recipe: " + System.currentTimeMillis());
         recipeDbService.rateRecipe(rateRecipeRequest);
         logger.info("Finished rate recipe: " + System.currentTimeMillis());
@@ -55,9 +67,12 @@ public class RecipesController {
 
     // Bonus
     @GetMapping(value = "/source-url", produces = "application/json")
-    public ResponseEntity<String> retrieveRecipeDetails(@RequestParam(value = "id") Long recipeId) {
+    @Operation(summary = "Get recipe source url")
+    public ResponseEntity<String> retrieveRecipeDetails(@RequestHeader("x-api-key") String apiKey,
+                                                        @RequestHeader("x-api-secret") String apiSecret,
+                                                        @RequestParam(value = "id") Long recipeId) {
         logger.info("Starting processing recipe details at: " + System.currentTimeMillis());
-        recipesClientService.getRecipeDetails(recipeId);
+        recipeClientService.fetchAndPersistRecipeDetails(recipeId);
         logger.info("Finished processing recipe details at: " + System.currentTimeMillis());
         return ResponseEntity.ok("OK");
     }

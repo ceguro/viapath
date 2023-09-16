@@ -14,3 +14,6 @@ stores recipe data in a PostgreSQL database, and performs periodic updates on re
 ![Rating recipe](./images/rating_recipe.png)
 
 ![Save Recipe detail](./images/source_url.png)
+
+API Documentation
+You can find the API documentation at [http://localhost:9595/swagger-ui.html](http://localhost:9595/swagger-ui/index.html), which uses Swagger/OpenAPI to facilitate interaction and understanding of the available endpoints.

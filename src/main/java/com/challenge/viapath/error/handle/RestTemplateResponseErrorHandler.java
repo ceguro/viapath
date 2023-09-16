@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.rmi.UnexpectedException;
 
 @Component
-public class RestTemplateResponseErrorHandler extends Exception implements ResponseErrorHandler {
+public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
 
     Logger logger = LoggerFactory.getLogger(RestTemplateResponseErrorHandler.class);
 

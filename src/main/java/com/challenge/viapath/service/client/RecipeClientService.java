@@ -53,7 +53,10 @@ public class RecipeClientService {
     private static final String QUERY_SEARCH_PARAMETER = "query";
 
     @Autowired
-    public RecipeClientService(RestTemplateBuilder restTemplateBuilder, RecipeImplementation recipeImplementation, RecipeDetailImplementation recipeDetailRepository, RecipeDetailImplementation recipeDetailImplementation) {
+    public RecipeClientService(
+            RestTemplateBuilder restTemplateBuilder,
+            RecipeImplementation recipeImplementation,
+            RecipeDetailImplementation recipeDetailImplementation) {
         this.recipeImplementation = recipeImplementation;
         this.restTemplate = restTemplateBuilder.errorHandler(new RestTemplateResponseErrorHandler()).build();
         this.recipeDetailImplementation = recipeDetailImplementation;

@@ -32,6 +32,7 @@ public class RecipesController {
         this.recipeDbService = recipeDbService;
     }
 
+    //TODO: Headers could be added using a swagger class ( I must read about how to implement it)
     @GetMapping(value = "/", produces = "application/json")
     @Operation(summary = "Get recipes by search query")
     public ResponseEntity<RecipeSearchResponseDTO> retrieveRecipes(@RequestHeader("x-api-key") String apiKey,

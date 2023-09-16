@@ -28,6 +28,7 @@ public class ScheduleRecipesUpdate {
     // Every hour
     @Scheduled(cron = "0 0 * * * *")
     public void updateRecipes() {
+        //TODO: pagination can be implemented to avoid fetching all recipes
         List<Recipe> dataBaseRecipes = recipeClientService.getAll();
         logger.info("Updating recipes at " + System.currentTimeMillis());
 

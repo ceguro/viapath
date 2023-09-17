@@ -3,6 +3,15 @@ This readme provides an overview of the "Viapath" project.
 The "Viapath" project is an application that uses Spring Boot to interact with an external recipe API,
 stores recipe data in a PostgreSQL database, and performs periodic updates on recipes to keep the database up to date.
 
+## Requirements
+
+Ensure you have the following prerequisites installed on your system:
+
+- Java 17
+- Gradle
+- Docker
+- Git
+
 # Sequence diagrams:
 
 ![Retrieve recipes](./images/retrieve_recipes.png)

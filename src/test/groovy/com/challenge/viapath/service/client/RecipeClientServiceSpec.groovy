@@ -2,6 +2,7 @@ package com.challenge.viapath.service.client
 
 import com.challenge.viapath.dto.RecipeDTO
 import com.challenge.viapath.dto.RecipeSearchResponseDTO
+import com.challenge.viapath.model.entities.Recipe
 import com.challenge.viapath.repository.implementation.RecipeDetailImplementation
 import com.challenge.viapath.repository.implementation.RecipeImplementation
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -40,20 +41,20 @@ class RecipeClientServiceSpec extends Specification {
             return ResponseEntity.ok("""{
             "results": [
                 {
-                    "id": "1",
+                    "id": 1,
                     "readyInMinutes": 1,
                     "sourceUrl": "source",
-                    "image": 1,
+                    "image": "image",
                     "servings": 1,
-                    "title": 1
+                    "title": "title"
                 },
                 {
-                    "id": "1",
+                    "id": 2,
                     "readyInMinutes": 1,
                     "sourceUrl": "source",
-                    "image": 1,
+                    "image": "image",
                     "servings": 1,
-                    "title": 1
+                    "title": "title"
                 }
             ],
             "baseUri": "http://example.com",
@@ -71,15 +72,15 @@ class RecipeClientServiceSpec extends Specification {
                         new RecipeDTO(id: 1,
                                 readyInMinutes: 1,
                                 sourceUrl: "source",
-                                image: 1,
+                                image: "image",
                                 servings: 1,
-                                title: 1,),
-                        new RecipeDTO(id: 1,
+                                title: "title",),
+                        new RecipeDTO(id: 2,
                                 readyInMinutes: 1,
                                 sourceUrl: "source",
-                                image: 1,
+                                image: "image",
                                 servings: 1,
-                                title: 1,),
+                                title: "title",),
                 ],
                 baseUri: "http://example.com",
                 offset: 0,
@@ -93,60 +94,55 @@ class RecipeClientServiceSpec extends Specification {
         1 * jmsTemplate.convertAndSend("RecipesQueue", _)
 
         when:
-
         def result = recipeClientService.fetchRecipes(searchQuery)
 
         then:
         result == expectedResult
     }
 
-   /* def "Test getRecipe method"() {
+    def "Test getRecipe method"() {
         given:
         def recipeId = 1
-        def objectMapper = Mock(ObjectMapper)
-        def responseEntity = ResponseEntity.ok("""{
-        "name": "Chicken Curry",
-        "id": 1
-    }""")
-        def expectedResult = new RecipeDTO(1, 1, "", "", 1, 1)
+        def responseEntity = ResponseEntity.ok("""                {
+                    "id": 1,
+                    "readyInMinutes": 1,
+                    "sourceUrl": "source",
+                    "image": 1,
+                    "servings": 1,
+                    "title": "title"
+                }""")
+        def expectedResult = new RecipeDTO(1, 1, "source", "1", 1, "title")
 
-        when:
-        restTemplate.getForEntity(_, String.class) >> {
+        1 * restTemplate.getForEntity(_, String.class) >> {
             return responseEntity
         }
 
-        objectMapper.readValue(_, _) >> {
-            return expectedResult
-        }
-
+        when:
         def result = recipeClientService.getRecipe(recipeId)
 
         then:
-        1 * restTemplate.getForEntity(_, String.class)
-        result.name == "Chicken Curry"
         result == expectedResult
     }
 
     def "Test fetchAndPersistRecipeDetails method"() {
         given:
         def recipeId = 1
-        def recipe = new Recipe(id: 1, sourceUrl: "http://example.com/recipe")
+        def recipe = new Recipe(id: 1, readyInMinutes: 1,  sourceUrl: "http://example.com/recipe", image: "image", servings: 1, title: "title")
         def recipeDetailsBlob = "Recipe Details".getBytes()
 
-        when:
-        recipeImplementation.getRecipeById(recipeId) >> recipe
-        restTemplate.getForEntity(_, byte[].class) >> {
+        1 * recipeImplementation.getRecipeById(recipeId) >> recipe
+
+        1 * restTemplate.getForEntity(_, byte[].class) >> {
             return ResponseEntity.ok(recipeDetailsBlob)
         }
 
+        when:
         recipeClientService.fetchAndPersistRecipeDetails(recipeId)
 
         then:
-        1 * recipeImplementation.getRecipeById(recipeId)
-        1 * restTemplate.getForEntity(_, byte[].class)
         1 * recipeDetailImplementation.saveRecipeDetail(_)
     }
-*/
+
 }
 
 
